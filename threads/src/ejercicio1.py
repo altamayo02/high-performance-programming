@@ -1,4 +1,4 @@
-import threading
+import threading  # usado para sincronización: Barrier y Thread (coordinar hilos)
 import pandas as pd
 import numpy as np
 
@@ -12,7 +12,7 @@ def calcular_media(
 	df: pd.DataFrame,
 	id_col: int,
 	medias: list,
-	barrera: threading.Barrier
+	barrera: threading.Barrier  # Barrier sincroniza que todos los hilos esperen aquí
 ) -> None:
 	# Selecciona su columna correspondiente y calcula la media
 	media = df.iloc[:, id_col].mean()
@@ -27,15 +27,16 @@ def barrera(n_hilos: int) -> None:
 	print('Cabeza del conjunto de datos:')
 	print(df.head(), '\n')
 
-	barrera = threading.Barrier(n_hilos)
+	barrera = threading.Barrier(n_hilos)  # crea la barrera que espera a `n_hilos`
 
 	medias = [0.0] * n_hilos
-	hilos: list[threading.Thread] = []
+	hilos: list[threading.Thread] = []  # lista para almacenar objetos Thread
 	for id_col in range(n_hilos):
 		hilo = threading.Thread(
 			target=calcular_media,
 			args=(df, id_col, medias, barrera)
 		)
+		# crea un hilo que ejecuta `calcular_media` (cada hilo calcula una columna)
 		hilos.append(hilo)
 		hilo.start()
 
