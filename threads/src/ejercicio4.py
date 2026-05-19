@@ -1,4 +1,4 @@
-import threading  # usado para Lock, Semaphore y Thread (productor/consumidor)
+import threading
 import time
 from collections import deque
 
@@ -6,15 +6,18 @@ from collections import deque
 def productor(
 	cola: deque,
 	bloqueo: threading.Lock,
-	espacio_cola: threading.Semaphore,  # controla espacio disponible en la cola
-	oferta: threading.Semaphore  # controla disponibilidad de productos
+	demanda: threading.Semaphore,  # controla espacio disponible en la cola
+	oferta: threading.Semaphore,  # controla disponibilidad de productos
+	n_consumidores: int
 ) -> None:
-	"""Coloca productos en la cola cada 2 segundos, cuando hay espacio disponible."""
-	# Cada productor produce 10 productos
-	for i in range(10):
+	"""
+		Coloca productos en la cola cada 2 segundos, cuando hay espacio disponible.
+	"""
+	# Cada productor produce n_consumidores productos
+	for i in range(n_consumidores):
 		# Los productores ponen productos en la cola cada 2 segundos
 		time.sleep(2)
-		espacio_cola.acquire()
+		demanda.acquire()
 		with bloqueo:
 			cola.append(f'{threading.current_thread().name}.{i}')
 			print(f'{threading.current_thread().name} produjo')
@@ -25,30 +28,33 @@ def productor(
 def consumidor(
 	cola: deque,
 	bloqueo: threading.Lock,
-	espacio_cola: threading.Semaphore,
+	demanda: threading.Semaphore,
 	oferta: threading.Semaphore,
+	n_productores: int
 ) -> None:
-	"""Quita productos de la cola cada segundo, cuando hay productos disponibles."""
-	# Cada consumidor consume 10 productos
-	for _ in range(10):
+	"""
+		Quita productos de la cola cada segundo, cuando hay productos disponibles.
+	"""
+	# Cada consumidor consume n_productores productos
+	for _ in range(n_productores):
 		oferta.acquire()
 		with bloqueo:
 			producto = cola.popleft()
 			print(f'{threading.current_thread().name} consumió {producto}')
-		espacio_cola.release()
-		# Los consumidores ponen productos en la cola cada segundo
+		demanda.release()
+		# Los consumidores quitan productos de la cola cada segundo
 		time.sleep(1)
 
 
 def consumir(
-	n_productores: int,
 	n_consumidores: int,
+	n_productores: int,
 	max_cola: int = 3
 ) -> None:
 	cola: deque = deque()
-	bloqueo = threading.Lock()  # Lock protege acceso a la cola compartida
-	espacio_cola = threading.Semaphore(max_cola)  # semáforo para limitar tamaño de cola
-	oferta = threading.Semaphore(0)  # semáforo que indica cuántos items hay para consumir
+	demanda = threading.Semaphore(max_cola)  # limitar tamaño de cola
+	oferta = threading.Semaphore(0)  # indica cuántos items hay para consumir
+	bloqueo = threading.Semaphore(1)  # protege acceso a la cola compartida
 
 	productores: list[threading.Thread] = []
 	consumidores: list[threading.Thread] = []
@@ -60,11 +66,12 @@ def consumir(
 				args=(
 					cola,
 					bloqueo,
-					espacio_cola,
+					demanda,
 					oferta,
+					n_consumidores
 				),
 				name=f'Productor {i + 1}'
-			)  # crea hilo productor
+			)
 		)
 
 	for i in range(n_consumidores):
@@ -74,11 +81,12 @@ def consumir(
 				args=(
 					cola,
 					bloqueo,
-					espacio_cola,
-					oferta
+					demanda,
+					oferta,
+					n_productores
 				),
 				name=f'Consumidor {i + 1}'
-			)  # crea hilo consumidor
+			)
 		)
 
 	for hilo in productores + consumidores:

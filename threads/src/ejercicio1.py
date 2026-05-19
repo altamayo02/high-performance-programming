@@ -1,4 +1,4 @@
-import threading  # usado para sincronización: Barrier y Thread (coordinar hilos)
+import threading
 import pandas as pd
 import numpy as np
 
@@ -12,7 +12,7 @@ def calcular_media(
 	df: pd.DataFrame,
 	id_col: int,
 	medias: list,
-	barrera: threading.Barrier  # Barrier sincroniza que todos los hilos esperen aquí
+	barrera: threading.Barrier
 ) -> None:
 	# Selecciona su columna correspondiente y calcula la media
 	media = df.iloc[:, id_col].mean()
@@ -24,6 +24,7 @@ def calcular_media(
 
 def barrera(n_hilos: int) -> None:
 	df = generar_marco_datos(100, max(10, n_hilos))
+	print(f'Tamaño del conjunto de datos: {df.shape}')
 	print('Cabeza del conjunto de datos:')
 	print(df.head(), '\n')
 

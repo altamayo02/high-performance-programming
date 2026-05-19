@@ -12,25 +12,25 @@ if __name__ == '__main__':
 	print('\n') """
 
 	""" print('##### EJERCICIO 2 - REPARACIÓN SERVIDORES #####\n')
-	ejercicio2.semáforo(num_técnicos=10, aforo=3)
+	ejercicio2.semáforo(n_técnicos=10, aforo=3)
 	print('\n') """
 
 	""" print('##### EJERCICIO 3 - BAILE DE TRANSACCIONES #####\n')
-	ejercicio3.bloqueo()
+	ejercicio3.bloqueo(n_transacciones=3)
 	print('\n') """
 
 	""" print('##### EJERCICIO 4 - PRODUCTOR-CONSUMIDOR #####\n')
-	ejercicio4.consumir(n_productores=2, n_consumidores=2, max_cola=3)
+	ejercicio4.consumir(n_productores=7, n_consumidores=3, max_cola=3)
 	print('\n') """
 
 	""" print('##### EJERCICIO 5 - SUMA DE MATRIZ CON BARRERA #####\n')
-	ejercicio5.total_matriz(filas=400, columnas=500, n_secciones=4)
+	ejercicio5.total_matriz(filas=500, columnas=500, n_secciones=4)
 	print('\n') """
 
-	""" print('##### EJERCICIO 6 - LECTORES Y ESCRITORES #####\n')
+	print('##### EJERCICIO 6 - LECTORES Y ESCRITORES #####\n')
 	ejercicio6.lectores_y_escritores()
-	print('\n') """
-
-	print('##### EJERCICIO 7 - CUENTA REGRESIVA ALTERNADA #####\n')
-	ejercicio7.cuenta_regresiva()
 	print('\n')
+
+	""" print('##### EJERCICIO 7 - CUENTA REGRESIVA ALTERNADA #####\n')
+	ejercicio7.cuenta_regresiva()
+	print('\n') """

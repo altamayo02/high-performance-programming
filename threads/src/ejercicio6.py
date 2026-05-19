@@ -1,4 +1,4 @@
-import threading  # usado para Locks y Threads (coordinar lectores/escritores)
+import threading
 import time
 
 
@@ -14,9 +14,9 @@ def lector(
 		if lectores_activos[0] == 1:
 			escritura.acquire()
 
-	print(f'Introduciendo {threading.current_thread().name}')  # muestra el hilo actual (logging)
+	print(f'Introduciendo {threading.current_thread().name}')
 	usuario = registro['usuario1']
-	print(f'{threading.current_thread().name} leyendo: {usuario}')  # identifica lector en salida
+	print(f'{threading.current_thread().name} leyendo: {usuario}')
 	time.sleep(1)
 
 	with bloqueo:
@@ -24,7 +24,7 @@ def lector(
 		if lectores_activos[0] == 0:
 			escritura.release()
 
-	print(f'{threading.current_thread().name} terminó de leer.')  # lector finaliza lectura
+	print(f'{threading.current_thread().name} terminó de leer.')
 
 
 def escritor(
@@ -37,7 +37,7 @@ def escritor(
 		time.sleep(2)
 		registro['usuario1']['visitas'] += 1
 		registro['usuario1']['email'] = (
-			f'{threading.current_thread().name.split(' ')[1]}@ejemplo.com'
+			f"{threading.current_thread().name.split(' ')[1]}@ejemplo.com"
 		)  # usa nombre del hilo para modificar email (demostración)
 		print(
 			f'{threading.current_thread().name} actualizó registro: ' + 
@@ -55,28 +55,48 @@ def lectores_y_escritores() -> None:
 		}
 	}
 
-	bloqueo = threading.Lock()  # Lock para el contador de lectores
 	escritura = threading.Lock()  # Lock exclusivo para escritores
+	bloqueo = threading.Lock()  # Lock para el contador de lectores
 	lectores_activos = [0]
 
 	hilos: list[threading.Thread] = []  # contenedor de hilos
-	for i in range(2):
-		hilos.append(
-			threading.Thread(
-				target=escritor,
-				args=(registro, escritura),
-				name=f'Escritor {i}'
-			)  # crea hilo escritor
+	
+	# Agregamos el Escritor 0
+	hilos.append(
+		threading.Thread(
+			target=escritor,
+			args=(registro, escritura),
+			name='Escritor 0'
 		)
+	)
 
-	for i in range(3):
+	# Agregamos los Lectores 0 y 1
+	for i in range(2):
 		hilos.append(
 			threading.Thread(
 				target=lector,
 				args=(registro, bloqueo, escritura, lectores_activos),
 				name=f'Lector {i}'
-			)  # crea hilo lector
+			)
 		)
+	
+	# Agregamos el Escritor 1
+	hilos.append(
+		threading.Thread(
+			target=escritor,
+			args=(registro, escritura),
+			name='Escritor 1'
+		)
+	)
+
+	# Agregamos el Lector 2
+	hilos.append(
+		threading.Thread(
+			target=lector,
+			args=(registro, bloqueo, escritura, lectores_activos),
+			name='Lector 2'
+		)
+	)
 
 	for hilo in hilos:
 		hilo.start()
@@ -85,3 +105,7 @@ def lectores_y_escritores() -> None:
 		hilo.join()
 
 	print('\nRegistro final:', registro['usuario1'])
+
+
+if __name__ == '__main__':
+	lectores_y_escritores()

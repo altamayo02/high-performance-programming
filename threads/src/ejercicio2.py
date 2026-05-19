@@ -2,19 +2,20 @@ import threading  # usado para controlar concurrencia: Semaphore y Thread
 import time
 import numpy as np
 
-def reparar(semáforo: threading.Semaphore) -> None:  # Semaphore limita acceso concurrente (aforo)
+def reparar(semáforo: threading.Semaphore) -> None:
 	with semáforo:
 		print(f'{threading.current_thread().name}: Reparando el servidor...')
-		rng = np.random.default_rng(42)
+		rng = np.random.default_rng()
 		tiempo_reparacion = 1 + 2 * rng.random()
 		time.sleep(tiempo_reparacion)
 		print(f'{threading.current_thread().name}: Reparación completa.')
 
-def semáforo(num_técnicos: int, aforo: int) -> None:
+def semáforo(n_técnicos: int, aforo: int) -> None:
 	semáforo = threading.Semaphore(aforo)  # crea semáforo con capacidad `aforo`
 
-	técnicos: list[threading.Thread] = []  # lista de threads que atenderán reparaciones
-	for i in range(num_técnicos):
+	# lista de hilos que "atenderán reparaciones"
+	técnicos: list[threading.Thread] = []
+	for i in range(n_técnicos):
 		técnicos.append(
 			threading.Thread(target=reparar, args=(semáforo,), name=f'Técnico {i+1}')  # crea hilo técnico
 		)
