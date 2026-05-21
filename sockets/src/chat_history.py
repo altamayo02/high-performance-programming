@@ -19,7 +19,7 @@ class ChatHistory:
     def __str__(self) -> str:
         with self._lock:
             if not self._messages:
-                return '[No messages]'
+                return '[No se ha enviado mensajes aún]'
             return '\n'.join(
                 f'{i + 1}. {msg}' for i, msg in enumerate(self._messages)
             )
