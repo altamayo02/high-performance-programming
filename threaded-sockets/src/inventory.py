@@ -2,11 +2,11 @@ import threading
 
 
 PRODUCTS = {
-    'laptop': {'price': 1200, 'stock': 10},
-    'mouse': {'price': 25, 'stock': 50},
-    'keyboard': {'price': 80, 'stock': 30},
-    'monitor': {'price': 350, 'stock': 15},
-    'headset': {'price': 60, 'stock': 25},
+    'laptop': {'price': 4_500_000, 'stock': 10},
+    'mouse': {'price': 120_000, 'stock': 50},
+    'keyboard': {'price': 350_000, 'stock': 30},
+    'monitor': {'price': 1_500_000, 'stock': 15},
+    'headset': {'price': 250_000, 'stock': 25},
 }
 
 
@@ -40,5 +40,5 @@ class Inventory:
         with self._lock:
             lines = ['Inventario actual:']
             for name, info in self._products.items():
-                lines.append(f'  {name}: ${info["price"]} - {info["stock"]} unidades')
+                lines.append(f'  {name}: ${info["price"]:,} COP - {info["stock"]} unidades')
             return '\n'.join(lines)

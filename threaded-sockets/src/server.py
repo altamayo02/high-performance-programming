@@ -6,7 +6,7 @@ import random
 from order_queue import OrderQueue
 from inventory import Inventory
 
-MIN_ORDERS = 5
+MIN_ORDERS = 20
 N_PROCESSORS = 3
 
 
